@@ -1,0 +1,15 @@
+
+(("test" ARTICLE (TITLE "Some title")
+  (AUTHORS (INNER-AUTHOR "test" "test") (INNER-AUTHOR "another" "another"))
+  (TEXT
+   "A lot of text is hereA lot of text is hereA lot of text is hereA lot of text is hereA lot of text is hereA lot of text is hereA lot of text is here
+
+A lot of text is here em{A lot of text is here} A lot of text is here
+A lot of text is here A lot of text is here A lot of text is here
+
+И немножко кириллицы.
+
+We'll try to make it work. May be.
+
+You can see this article on page article{test}.
+"))) 
