@@ -35,7 +35,11 @@
 				      :direction :output
 				      :if-exists :error
 				      :if-does-not-exist :create)
-			      (format file (html body)))))
+			      (format file (html (case object-type
+                                                   (author (cons object-type
+                                                                 (cons name
+                                                                       (cdr body))))
+                                                   (otherwise body)))))))
 			(when *local-root*
 			  (setf filename
 				(merge-pathnames

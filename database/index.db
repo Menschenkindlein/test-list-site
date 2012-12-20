@@ -1,5 +1,4 @@
 
-(("test" INDEX (ARTICLE-VIDGET "test" "test" "big")
-  (AUTHOR-VIDGET "test" "test") (ARTICLE-VIDGET "test" "test")
-  (AUTHOR-VIDGET "test" "test" "long") (ARTICLE-VIDGET "test" "test")
-  (AUTHOR-VIDGET "another" "another" "long") (AUTHOR-VIDGET "test" "test"))) 
+(((TEST) INDEX (ARTICLE-VIDGET "hello" "big") (AUTHOR-VIDGET "test")
+  (ARTICLE-VIDGET "test") (AUTHOR-VIDGET "test" "long") (ARTICLE-VIDGET "test")
+  (AUTHOR-VIDGET "another" "long") (AUTHOR-VIDGET "test"))) 

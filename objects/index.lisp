@@ -28,21 +28,19 @@
                               (mapcar #'html vidgets))))
 
 (add-html-structure 'author-vidget
-		    (lambda (link-text author &optional (class "default"))
+		    (lambda (author &optional (class "default"))
 		      (format nil "<span class=\"~a\"><div class=\"author\">~
                                      <p>~a</p>~
                                    </div></span>"
 			      class
 			      (html (list 'inner-author
-					  link-text
 					  author)))))
 
 (add-html-structure 'article-vidget
-		    (lambda (link-text article &optional (class "default"))
+		    (lambda (article &optional (class "default"))
 		      (format nil "<span class=\"~a\"><div class=\"article\">~
                                      <p>~a</p>~
                                    </div></span>"
 			      class
 			      (html (list 'inner-article
-					  link-text
 					  article)))))

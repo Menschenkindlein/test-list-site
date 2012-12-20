@@ -6,17 +6,26 @@
 	     :default-structure
 	     '(article
 	       (title "Example title")
-	       (authors-list
-		(author "exmpl"))
+	       (authors-list "exmpl")
 	       (text
 		(paragraph
 		 "Example paragraph.")))
-	     :reading-function (lambda (stream)
-				 (article-parse
-				  'article
-				  (read-to-string stream))))
+	     :reading-function
+             (lambda (stream)
+               (article-parse
+                'article
+                (read-to-string stream)))
+             :helper-maker
+             (lambda (&rest body)
+               (destructuring-bind (ar
+                                    (tit title)
+                                    (al . authors-list)
+                                    text) body
+                 (declare (ignore ar tit al text))
+                 `(:title ,title
+                          :authors ,authors-list))))
 
-(article-defrule article (and title authors raw-text)
+(article-defrule article (and title authors text)
   (:lambda (result)
     (cons 'article result)))
 
@@ -28,22 +37,15 @@
   (:lambda (result)
     (cons 'authors (article-parse 'authors-list (second result)))))
 
-(article-defrule authors-list (+ inner-author))
+(article-defrule authors-list (+ word))
 
-(article-defrule inner-author (and (+ (and (! #\Space) character))
-				   (? #\Space))
-  (:destructure (author rest)
-    (declare (ignore rest))
-    (list 'inner-author (text author) (text author))))
-
-(article-defrule raw-text (* character)
+(article-defrule text (* paragraph)
   (:lambda (result)
-    (list 'text (text result))))
-
-(article-defrule text (* paragraph))
+    (cons 'text result)))
 
 (article-defrule paragraph-text (+ (or emphasis
 				       inner-article
+                                       inner-author
 				       character)))
 
 (article-defrule emphasis (and "em{" (+ (and (! #\}) character)) "}")
@@ -56,7 +58,14 @@
 				    "}")
   (:destructure (ar text ra)
     (declare (ignore ar ra))
-    (list 'inner-article (text text) (text text))))
+    (list 'inner-article (text text))))
+
+(article-defrule inner-author (and "author{"
+				    (+ (and (! #\}) character))
+				    "}")
+  (:destructure (au text ua)
+    (declare (ignore au ua))
+    (list 'inner-author (text text))))
 
 ;; Printers rules
 
@@ -87,27 +96,31 @@
 (add-html-structure 'authors
 		    (lambda (&rest authors)
 		      (format nil "  <p class=\"authors\">~{~a~^ ~}</p>"
-			      (mapcar #'html authors))))
+			      (mapcar (lambda (author)
+                                        (html (list 'inner-author author)))
+                                      authors))))
 
 (add-html-structure 'inner-author
-		    (lambda (link-text author)
-		      (format nil "<a href=\"~a\">~a</a>"
-			      (html (db-get 'author
-					    author))
-			      link-text)))
+		    (lambda (author)
+                      (let ((author (db-get 'author
+					    author)))
+                        (format nil "<a href=\"~a\">~a</a>"
+                                (html author)
+                                (second (fourth author))))))
 
 (add-html-structure 'inner-article
-		    (lambda (link-text article)
+		    (lambda (article)
+                      (let ((article (db-get 'article
+                                             article)))
 		      (format nil "<a href=\"~a\">~a</a>"
-			      (html (db-get 'article
-					    article))
-			      link-text)))
+                              (html article)
+			      (second (second (fourth article)))))))
 
 (add-html-structure 'text
-		    (lambda (text)
+		    (lambda (&rest paragraphs)
 		      (format nil "  <div>~%~{      ~a~%~}    </div>"
 			      (mapcar #'html
-				      (article-parse 'text text)))))
+				      paragraphs))))
 
 (add-html-structure 'paragraph
 		    (lambda (paragraph)
@@ -136,20 +149,19 @@
 (add-edit-structure 'authors
 		    (lambda (&rest authors)
 		      (format nil "~{~a~^ ~}"
-			      (mapcar #'edit authors))))
+			      authors)))
 
 (add-edit-structure 'text
-		    (lambda (text)
+		    (lambda (&rest text)
 		      (format nil "~{~a~^~%~%~}"
 			      (mapcar #'edit
-				      (article-parse 'text text)))))
+				      text))))
 
 (add-edit-structure 'paragraph
 		    (lambda (paragraph)
 		      (format nil "~{~a~}"
 			      (mapcar (lambda (item)
-					(if (eq (type-of item)
-						'standard-char)
+					(if (characterp item)
 					    item
 					    (edit item)))
 				      (article-parse 'paragraph-text
@@ -160,13 +172,11 @@
 		      (format nil "em{~a}" emphasized)))
 
 (add-edit-structure 'inner-article
-		    (lambda (link-text article)
-		      (declare (ignore link-text))
+		    (lambda (article)
 		      (format nil "article{~a}"
 			      article)))
 
 (add-edit-structure 'inner-author
-		    (lambda (link-text author)
-		      (declare (ignore link-text))
-		      (format nil "~a"
+		    (lambda (author)
+		      (format nil "author{~a}"
 			      author)))

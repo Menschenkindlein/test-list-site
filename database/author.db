@@ -1,2 +1,2 @@
 
-(("test" AUTHOR "S. O. MeAuthor") ("another" AUTHOR "A. N. Other")) 
+(((TEST) AUTHOR "S. O. MeAuthor") ((ANOTHER) AUTHOR "A. N. Other")) 
