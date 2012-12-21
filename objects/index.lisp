@@ -22,10 +22,22 @@
       <div class=\"vidgets\">
 ~{        ~a~^~%~}
       </div>
+      <div class=\"articles-list\">
+~{        <p class=\"article\">~a</p>~}
+      </div>
     </div>
   </body>
 </html>"                      (html (db-get 'style "index"))
-                              (mapcar #'html vidgets))))
+                              (mapcar #'html vidgets)
+                              (mapcar (lambda (article)
+                                        (html `(inner-article
+                                                ,(second article))))
+                                      (db-select
+                                       'article
+                                       (db-where :date
+                                                 :custom-compare
+                                                 #'>
+                                                 (convert-date 12 12 2012)))))))
 
 (add-html-structure 'author-vidget
 		    (lambda (author &optional (class "default"))

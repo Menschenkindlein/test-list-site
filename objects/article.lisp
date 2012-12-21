@@ -7,6 +7,7 @@
 	     '(article
 	       (title "Example title")
 	       (authors-list "exmpl")
+               (date "11" "11" "2111")
 	       (text
 		(paragraph
 		 "Example paragraph.")))
@@ -20,12 +21,15 @@
                (destructuring-bind (ar
                                     (tit title)
                                     (al . authors-list)
+                                    (dt . date)
                                     text) body
-                 (declare (ignore ar tit al text))
+                 (declare (ignore ar tit al dt text))
                  `(:title ,title
-                          :authors ,authors-list))))
+                   :authors ,authors-list
+                   :date ,(apply #'convert-date
+                                 (mapcar #'read-from-string date))))))
 
-(article-defrule article (and title authors text)
+(article-defrule article (and title authors date text)
   (:lambda (result)
     (cons 'article result)))
 
@@ -35,9 +39,11 @@
 
 (article-defrule authors paragraph
   (:lambda (result)
-    (cons 'authors (article-parse 'authors-list (second result)))))
+    (cons 'authors (article-parse '(+ word) (second result)))))
 
-(article-defrule authors-list (+ word))
+(article-defrule date paragraph
+  (:lambda (result)
+    (cons 'date (article-parse '(+ word) (second result)))))
 
 (article-defrule text (* paragraph)
   (:lambda (result)
@@ -70,7 +76,7 @@
 ;; Printers rules
 
 (add-html-structure 'article
-		    (lambda (title authors text)
+		    (lambda (title authors date text)
 		      (format nil
 			      "~
 <!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">
@@ -83,15 +89,21 @@
   ~a
   ~a
   ~a
+  ~a
   </body>
 </html>"                      (second title)
                               (html title)
 			      (html authors)
+                              (html date)
 			      (html text))))
 
 (add-html-structure 'title
 		    (lambda (title)
 		      (format nil "  <h1>~a</h1>" title)))
+
+(add-html-structure 'date
+		    (lambda (day month year)
+		      (format nil "  <p>~a ~a ~a</p>" day month year)))
 
 (add-html-structure 'authors
 		    (lambda (&rest authors)
@@ -134,7 +146,7 @@
 		      (format nil "<i>~a</i>" emphasized)))
 
 (add-edit-structure 'article
-		    (lambda (title authors text)
+		    (lambda (title authors date text)
 		      (format nil
 			      "~
 ~a
@@ -142,9 +154,16 @@
 ~a
 
 ~a
+
+~a
 "                             (second title)
 			      (edit authors)
+                              (edit date)
 			      (edit text))))
+
+(add-edit-structure 'date
+		    (lambda (day month year)
+		      (format nil "~a ~a ~a" day month year)))
 
 (add-edit-structure 'authors
 		    (lambda (&rest authors)
