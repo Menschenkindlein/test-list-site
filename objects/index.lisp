@@ -34,10 +34,10 @@
                                                 ,(second article))))
                                       (db-select
                                        'article
-                                       (db-where :date
-                                                 :custom-compare
-                                                 #'>
-                                                 (convert-date 12 12 2012)))))))
+                                       (lambda (&rest rest)
+                                         (declare (ignore rest))
+                                         t)
+                                       :date)))))
 
 (add-html-structure 'author-vidget
 		    (lambda (author &optional (class "default"))
