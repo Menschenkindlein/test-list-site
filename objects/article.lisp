@@ -75,10 +75,10 @@
 
 ;; Printers rules
 
-(add-html-structure 'article
-		    (lambda (title authors date text)
-		      (format nil
-			      "~
+(html-defmacro 'article
+	       (lambda (title authors date text)
+		 (format nil
+			 "~
 <!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">
 <html xmlns=\"http://www.w3.org/1999/xhtml\">
   <head>
@@ -91,64 +91,63 @@
   ~a
   ~a
   </body>
-</html>"                      (second title)
-                              (html title)
-			      (html authors)
-                              (html date)
-			      (html text))))
+</html>"       (second title)
+               (html title)
+	       (html authors)
+	       (html date)
+	       (html text))))
 
-(add-html-structure 'title
-		    (lambda (title)
-		      (format nil "  <h1>~a</h1>" title)))
+(html-defun 'title
+	    (lambda (title)
+	      (format nil "  <h1>~a</h1>" title)))
 
-(add-html-structure 'date
-		    (lambda (day month year)
-		      (format nil "  <p>~a ~a ~a</p>" day month year)))
+(html-defun 'date
+	    (lambda (day month year)
+	      (format nil "  <p>~a ~a ~a</p>" day month year)))
 
-(add-html-structure 'authors
-		    (lambda (&rest authors)
-		      (format nil "  <p class=\"authors\">~{~a~^ ~}</p>"
-			      (mapcar (lambda (author)
-                                        (html (list 'inner-author author)))
-                                      authors))))
+(html-defmacro 'authors
+	       (lambda (&rest authors)
+		 (format nil "  <p class=\"authors\">~{~a~^ ~}</p>"
+			 (mapcar (lambda (author)
+				   (html (list 'inner-author author)))
+				 authors))))
 
-(add-html-structure 'inner-author
-		    (lambda (author)
-                      (let ((author (db-get 'author
-					    author)))
-                        (format nil "<a href=\"~a\">~a</a>"
-                                (html author)
-                                (second (fourth author))))))
+(html-defmacro 'inner-author
+	       (lambda (author)
+		 (let ((author (db-get 'author
+				       author)))
+		   (format nil "<a href=\"~a\">~a</a>"
+			   (html author)
+			   (second (fourth author))))))
 
-(add-html-structure 'inner-article
-		    (lambda (article)
-                      (let ((article (db-get 'article
-                                             article)))
-		      (format nil "<a href=\"~a\">~a</a>"
-                              (html article)
-			      (second (second (fourth article)))))))
+(html-defmacro 'inner-article
+	       (lambda (article)
+		 (let ((article (db-get 'article
+					article)))
+		   (format nil "<a href=\"~a\">~a</a>"
+			   (html article)
+			   (second (second (fourth article)))))))
 
-(add-html-structure 'text
-		    (lambda (&rest paragraphs)
-		      (format nil "  <div>~%~{      ~a~%~}    </div>"
-			      (mapcar #'html
-				      paragraphs))))
+(html-defun 'text
+	    (lambda (&rest paragraphs)
+	      (format nil "  <div>~%~{      ~a~%~}    </div>"
+		      paragraphs)))
 
-(add-html-structure 'paragraph
-		    (lambda (paragraph)
-		      (format nil "<p>~{~a~}</p>"
-			      (mapcar #'html
-				      (article-parse 'paragraph-text
-						     paragraph)))))
+(html-defmacro 'paragraph
+	       (lambda (paragraph)
+		 (format nil "<p>~{~a~}</p>"
+			 (mapcar #'html
+				 (article-parse 'paragraph-text
+						paragraph)))))
 
-(add-html-structure 'emphasis
-		    (lambda (emphasized)
-		      (format nil "<i>~a</i>" emphasized)))
+(html-defun 'emphasis
+	    (lambda (emphasized)
+	      (format nil "<i>~a</i>" emphasized)))
 
-(add-edit-structure 'article
-		    (lambda (title authors date text)
-		      (format nil
-			      "~
+(edit-defmacro 'article
+	       (lambda (title authors date text)
+		 (format nil
+			 "~
 ~a
 
 ~a
@@ -156,46 +155,45 @@
 ~a
 
 ~a
-"                             (second title)
-			      (edit authors)
-                              (edit date)
-			      (edit text))))
+"                        (second title)
+			 (edit authors)
+			 (edit date)
+			 (edit text))))
 
-(add-edit-structure 'date
-		    (lambda (day month year)
-		      (format nil "~a ~a ~a" day month year)))
+(edit-defun 'date
+	    (lambda (day month year)
+	      (format nil "~a ~a ~a" day month year)))
 
-(add-edit-structure 'authors
-		    (lambda (&rest authors)
-		      (format nil "~{~a~^ ~}"
-			      authors)))
+(edit-defun 'authors
+	    (lambda (&rest authors)
+	      (format nil "~{~a~^ ~}"
+		      authors)))
 
-(add-edit-structure 'text
-		    (lambda (&rest text)
-		      (format nil "~{~a~^~%~%~}"
-			      (mapcar #'edit
-				      text))))
+(edit-defun 'text
+	    (lambda (&rest text)
+	      (format nil "~{~a~^~%~%~}"
+		      text)))
 
-(add-edit-structure 'paragraph
-		    (lambda (paragraph)
-		      (format nil "~{~a~}"
-			      (mapcar (lambda (item)
-					(if (characterp item)
-					    item
-					    (edit item)))
-				      (article-parse 'paragraph-text
-						     paragraph)))))
+(edit-defmacro 'paragraph
+	       (lambda (paragraph)
+		 (format nil "~{~a~}"
+			 (mapcar (lambda (item)
+				   (if (characterp item)
+				       item
+				       (edit item)))
+				 (article-parse 'paragraph-text
+						paragraph)))))
 
-(add-edit-structure 'emphasis
-		    (lambda (emphasized)
-		      (format nil "em{~a}" emphasized)))
+(edit-defun 'emphasis
+	    (lambda (emphasized)
+	      (format nil "em{~a}" emphasized)))
 
-(add-edit-structure 'inner-article
-		    (lambda (article)
-		      (format nil "article{~a}"
-			      article)))
+(edit-defun 'inner-article
+	    (lambda (article)
+	      (format nil "article{~a}"
+		      article)))
 
-(add-edit-structure 'inner-author
-		    (lambda (author)
-		      (format nil "author{~a}"
-			      author)))
+(edit-defun 'inner-author
+	    (lambda (author)
+	      (format nil "author{~a}"
+		      author)))

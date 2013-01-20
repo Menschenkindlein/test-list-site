@@ -1,0 +1,11 @@
+
+((TEST :TITLE "Some title" :AUTHORS ("test" "another") :DATE 404) ARTICLE
+ (TITLE "Some title") (AUTHORS "test" "another") (DATE "20" "12" "2012")
+ (TEXT
+  (PARAGRAPH
+   "A lot of text is hereA lot of text is hereA lot of text is hereA lot of text is hereA lot of text is hereA lot of text is hereA lot of text is here")
+  (PARAGRAPH
+   "A lot of text is here em{A lot of text is here} A lot of text is here A lot of text is here A lot of text is here A lot of text is here")
+  (PARAGRAPH "Интересное кино...")
+  (PARAGRAPH "We'll try to make it work. May be.")
+  (PARAGRAPH "You can see this article on page article{test}."))) 

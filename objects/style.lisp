@@ -7,10 +7,10 @@
 
 ;; Printers rules
 
-(add-html-structure 'style
-		    (lambda (style)
-		      style))
+(html-defun 'style
+	    (lambda (style)
+	      style))
 
-(add-edit-structure 'style
-		    (lambda (style)
-		      style))
+(edit-defun 'style
+	    (lambda (style)
+	      style))

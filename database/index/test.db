@@ -1,0 +1,4 @@
+
+((TEST) INDEX (ARTICLE-VIDGET "hello" "big") (AUTHOR-VIDGET "test")
+ (ARTICLE-VIDGET "test") (AUTHOR-VIDGET "test" "long") (ARTICLE-VIDGET "test")
+ (AUTHOR-VIDGET "another" "long") (AUTHOR-VIDGET "test")) 

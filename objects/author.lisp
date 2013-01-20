@@ -3,10 +3,10 @@
 	     '(author
 	       "Example Author"))
 
-(add-html-structure 'author
-		    (lambda (author-nickname author-name)
-		      (format nil
-			      "~
+(html-defmacro 'author
+	       (lambda (author-nickname author-name)
+		 (format nil
+			 "~
 <!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">
 <html xmlns=\"http://www.w3.org/1999/xhtml\">
   <head>
@@ -19,16 +19,16 @@
 ~{    ~a~}
   </div>
   </body>
-</html>"                      author-name
-                              author-name
-                              (mapcar (lambda (article)
-                                        (html `(inner-article
-                                                ,(second article))))
-                                      (db-select
-                                       'article
-                                       (db-where :authors
-                                                 :contains
-                                                 author-nickname))))))
+</html>"                 author-name
+                         author-name
+			 (mapcar (lambda (article)
+				   (html `(inner-article
+					   ,(second article))))
+				 (db-select
+				  'article
+				  (db-where :authors
+					    :contains
+					    author-nickname))))))
 
 
 
